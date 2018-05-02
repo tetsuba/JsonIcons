@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Page Title</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ramda/0.25.0/ramda.min.js"></script>
+
+    <style>
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Helvetica;
+        }
+
+        h1 {
+            display: block;
+            text-align: center;
+        }
+
+        .icons-list {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .icon-block {
+            width: 16%;
+            margin: 20px 1.5%;
+            padding: 10px 0;
+            border: solid 1px #DDD;
+            transition: fill 0.3s;
+            cursor: pointer;
+        }
+
+        .icon-block:hover svg {
+            fill: red;
+        }
+
+        .icon-block:hover {
+            color: red;
+        }
+
+        .icon-body {
+            margin: 0 20% 20px;
+            text-align: center;
+        }
+
+        .icon-footer {
+            text-align: center;
+        }
+
+        .code-example {
+            padding: 50px 0;
+        }
+
+        .code-example p {
+            padding: 20px;
+            background-color: #DDDDDD;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+<h1>ICON LIBRARY</h1>
+<div class="icons-list"></div>
+<div class="code-example">
+    <h1>Example Code:</h1>
+    <p>
+        < icon name="arrow-left2" color="#ff0000" />
+    </p>
+</div>
+<script src="./main.js"></script>
+</body>
+</html>
