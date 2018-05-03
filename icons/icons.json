@@ -1,0 +1,30 @@
+{
+  "burton": {
+    "input": "icons/burton/",
+    "output": "example/burton/"
+  },
+  "dorothyperkins": {
+    "input": "icons/dorothyperkins/",
+    "output": "example/dorothyperkins/"
+  },
+  "evans": {
+    "input": "icons/evans/",
+    "output": "example/evans/"
+  },
+  "missselfridge": {
+    "input": "icons/missselfridge/",
+    "output": "example/missselfridge/"
+  },
+  "topman": {
+    "input": "icons/topman/",
+    "output": "example/topman/"
+  },
+  "topshop": {
+    "input": "icons/topshop/",
+    "output": "example/topshop/"
+  },
+  "wallis": {
+    "input": "icons/wallis/",
+    "output": "example/wallis/"
+  }
+}

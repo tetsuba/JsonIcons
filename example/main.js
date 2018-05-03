@@ -1,14 +1,17 @@
-axios.get('../icons.json')
-    .then(function (response) {
-        loadIcons(response.data)
-    })
-    .catch(function (error) {
-        console.log(error);
-    });
+const array = ['burton', 'dorothyperkins', 'evans', 'missselfridge', 'topman', 'topshop', 'wallis']
 
+array.forEach((brand) => {
+    axios.get('./' + brand + '/icons.json')
+        .then(function (response) {
+            loadIcons(response.data, '.' + brand + '-icons-list')
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+})
 
-function loadIcons(icons) {
-    let ele = document.querySelector('.icons-list');
+function loadIcons(icons, className) {
+    let ele = document.querySelector(className);
 
     R.forEach(
         (iconName) => {
@@ -26,8 +29,6 @@ function loadIcons(icons) {
             let svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
             svg.setAttribute('viewBox', '0 0 32 32')
-            // svg.setAttribute('width', '32')
-            // svg.setAttribute('height', '32')
             svg.setAttribute('class', 'icon-' + iconName)
 
             let path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
