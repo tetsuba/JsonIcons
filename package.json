@@ -1,16 +1,18 @@
 {
   "name": "JsonIcons",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "description": "Convert svg files into a json file",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./index.js --src='./icons/icons.json'"
+    "start": "node ./index.js /icons/icons.json"
+  },
+  "bin": {
+    "JsonIcons": "./index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "minimist": "^1.2.0",
     "ramda": "^0.25.0",
     "svgson": "^2.1.1"
   }

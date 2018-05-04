@@ -1,30 +1,30 @@
 {
   "burton": {
-    "input": "icons/burton/",
-    "output": "example/burton/"
+    "input": "/icons/burton/",
+    "output": "/example/burton/"
   },
   "dorothyperkins": {
-    "input": "icons/dorothyperkins/",
-    "output": "example/dorothyperkins/"
+    "input": "/icons/dorothyperkins/",
+    "output": "/example/dorothyperkins/"
   },
   "evans": {
-    "input": "icons/evans/",
-    "output": "example/evans/"
+    "input": "/icons/evans/",
+    "output": "/example/evans/"
   },
   "missselfridge": {
-    "input": "icons/missselfridge/",
-    "output": "example/missselfridge/"
+    "input": "/icons/missselfridge/",
+    "output": "/example/missselfridge/"
   },
   "topman": {
-    "input": "icons/topman/",
-    "output": "example/topman/"
+    "input": "/icons/topman/",
+    "output": "/example/topman/"
   },
   "topshop": {
-    "input": "icons/topshop/",
-    "output": "example/topshop/"
+    "input": "/icons/topshop/",
+    "output": "/example/topshop/"
   },
   "wallis": {
-    "input": "icons/wallis/",
-    "output": "example/wallis/"
+    "input": "/icons/wallis/",
+    "output": "/example/wallis/"
   }
 }

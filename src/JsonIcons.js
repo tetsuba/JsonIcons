@@ -1,8 +1,6 @@
 const R = require('ramda');
 const svgson = require('svgson');
 const fs = require('fs');
-const PATH = require('path');
-
 
 /* Is icon list completed
  *
@@ -27,9 +25,11 @@ const updateIconList = (eof, path, completed) => {
      * @param {object} icon
      * */
     return (icon) => {
+        // merge new icon to icon list
         iconList = R.merge(iconList, icon);
+        const isCompleted = isListCompleted(iconList, eof);
 
-        isListCompleted(iconList, eof)
+        isCompleted
             ? completed(iconList, path)
             : null
     }
@@ -42,10 +42,12 @@ const updateIconList = (eof, path, completed) => {
  * @param {string} fileName
  * */
 const readIconFile =
-    (path, SrcPath, updateList) =>
-        (iconName) => {
-            const convertToJson = convertSvgToJson(iconName, updateList);
-            const filePath = PATH.resolve(SrcPath, path.input + iconName);
+    (path, updateIconList) =>
+        (iconFileName) => {
+            const convertToJson = convertIconToJson(iconFileName, updateIconList);
+            const filePath = path.input + iconFileName;
+
+            // Node file system to read file
             fs.readFile(filePath, 'utf8', convertToJson);
         }
 
@@ -53,53 +55,65 @@ const readIconFile =
  *
  * @param {string} fileName
  * @param {func} updateList
- * @param {object} error
- * @param {object} svg
  * */
-const convertSvgToJson =
-    (fileName, updateList) =>
-        (error, svg) => {
+const convertIconToJson =
+    (fileName, updateList) => {
+        const getPath = getIconPath(fileName, updateList);
+        const options = { svgo: true, pathsKey: 'myPaths' };
+
+        /* Convert svg to JSON using svgson
+         *
+         * @param {object} error
+         * @param {object} icon
+         * */
+        return (error, icon) => {
             if (error) { throw error; }
-            const getPath = getSvgPath(fileName, updateList);
-            svgson(
-                svg,
-                { svgo: true, pathsKey: 'myPaths' },
-                getPath
-            )
+            svgson(icon, options, getPath);
         };
+    }
 
 /*
- *
  * @param {string} fileName
  * @param {func} save
- * @param {object} child
  * */
-const savePath =
-    (fileName, updateList) =>
-        (child) => {
-            const hasPath = R.has('d');
-            if (hasPath(child.attrs)) {
-                const key = R.replace('.svg', '', fileName)
-                updateList({[key]: child.attrs.d});
-            }
-        };
+const saveIconPath = (iconFileName, updateList) => {
+    const hasPath = R.has('d');
+    const key = R.replace('.svg', '', iconFileName)
+
+    /* If child has attribute "d" then update iconList
+     *
+     * @param {object} child
+     * */
+    return (child) => {
+        if (hasPath(child.attrs)) {
+            updateList(
+                R.zipObj([key], [child.attrs.d]),
+            );
+        }
+    };
+}
+
 
 /*
- *
  * @param {string} fileName
  * @param {func} cb
- * @param {object} svg
  * */
-const getSvgPath =
-    (fileName, cb) =>
-        ({myPaths}) => {
-            const save = savePath(fileName, cb);
-            R.isEmpty(myPaths)
-                ? console.log('SVG path not found!')
-                : R.forEach(save, myPaths.childs)
-        };
+const getIconPath = (fileName, cb) => {
+    const save = saveIconPath(fileName, cb);
 
-/*
+    /* Get icon path and save to iconList
+     *
+     * @param {object} icon
+     * */
+    return ({myPaths}) => {
+        R.isEmpty(myPaths)
+            ? console.log('SVG path not found!')
+            : R.forEach(save, myPaths.childs)
+    };
+}
+
+
+/* Create an iconList with iconFileName
  *
  * @param {object} err
  * @param {array} fileNames
@@ -107,38 +121,40 @@ const getSvgPath =
  * @param {func} cb
  * */
 const createIconList =
-    (path, SrcPath, completed) =>
-        (err, fileNames) => {
-            console.log(fileNames)
+    (path, completed) =>
+        (err, iconFileName) => {
             if (err) { throw err; }
-            const updateList = updateIconList(R.length(fileNames), path, completed);
-            const readFile = readIconFile(path, SrcPath, updateList)
-            R.forEach(readFile, fileNames)
+            const updateList = updateIconList(R.length(iconFileName), path, completed);
+            const readFile = readIconFile(path, updateList)
+            R.forEach(readFile, iconFileName)
         }
 
-/* Read directory and return a list of file names
+/* Read directory and return a list of icon file names
  *
  * @param {func} completed
  * @param {object} path
  * */
-const getIconNamesFromDirectory =
-    (SrcPath, completed) =>
+const getIconFileNamesFromDirectory =
+    (completed) =>
         (path) => {
-            const createList = createIconList(path, SrcPath, completed);
-            const dirPath = PATH.resolve(SrcPath, path.input);
-            fs.readdir(dirPath, createList);
+            const createList = createIconList(path, completed);
+
+            // Node file system to read directory
+            fs.readdir(path.input, createList);
         };
 
-/* Create JSON file with icon data
+/* Create JSON file with iconList
  *
  * @param {object} icons
  * @param {object} path
  * */
-const saveToFile = (icons, path, SrcPath) => {
-    const filePath = PATH.resolve(SrcPath, `${path.output}/icons.json`);
+const saveToFile = (icons, path) => {
+    const filePath = path.output + 'icons.json';
+
+    // Node file system to write file
     fs.writeFile(filePath, icons, (err) => {
         if (err) throw err;
-        console.log('JSON file created!');
+        console.log('CREATED: ', filePath);
     });
 }
 
@@ -147,12 +163,31 @@ const saveToFile = (icons, path, SrcPath) => {
  * @param {array} iconList
  * @param {func} completed
  * */
-const createJSONIcons = (iconList, SrcPath, completed) => {
-    const getIconNames = getIconNamesFromDirectory(SrcPath, completed);
-    R.forEach(getIconNames, iconList);
+const createJSONIcons = (iconList, completed) => {
+    const getIconFileNames = getIconFileNamesFromDirectory(completed);
+    R.forEach(getIconFileNames, iconList);
 };
+
+/* Update icons list to include full path
+ *
+ * @param {string} basePath
+ * @param {string} directory
+ * */
+const updateIconListWithFullPath = (basePath, directory) => {
+    const iconList = require(basePath + directory);
+
+    return R.forEach(
+        (src) => {
+            src.input = basePath + src.input;
+            src.output = basePath + src.output;
+            return src;
+        },
+        R.values(iconList)
+    )
+}
 
 module.exports = {
     createJSONIcons,
-    saveToFile
+    saveToFile,
+    updateIconListWithFullPath,
 };
