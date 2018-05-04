@@ -1,6 +1,6 @@
 {
   "name": "JsonIcons",
-  "version": "1.0.4",
+  "version": "1.0.0",
   "description": "Convert svg files into a json file",
   "main": "index.js",
   "scripts": {
