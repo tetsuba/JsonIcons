@@ -1,7 +1,7 @@
 
 # JSONIcons
 
-Convert svg files into a JSON file(s).
+Create JSON file(s) from specified icon files.
 
 ### Installation
 ```javascript
