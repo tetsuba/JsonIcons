@@ -14,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "ramda": "^0.25.0",
-    "svgson": "^2.1.1"
+    "svgson": "^2.1.1",
+    "through2": "^2.0.3"
   }
 }
