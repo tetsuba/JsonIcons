@@ -4,7 +4,7 @@
   "description": "Convert svg files into a json file",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "node ./index.js /icons/icons.json"
   },
   "bin": {
@@ -13,8 +13,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ramda": "^0.25.0",
     "svgson": "^2.1.1",
     "through2": "^2.0.3"
+  },
+  "devDependencies": {
+    "jest": "^23.5.0"
   }
 }

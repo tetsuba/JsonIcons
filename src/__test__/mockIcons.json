@@ -1,0 +1,14 @@
+{
+  "dir1": {
+    "input": "/dir1/input/",
+    "output": "/dir1/output/"
+  },
+  "dir2": {
+    "input": "/dir2/input/",
+    "output": "/dir2/output/"
+  },
+  "dir3": {
+    "input": "/dir3/input/",
+    "output": "/dir3/output/"
+  }
+}
