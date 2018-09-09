@@ -34,30 +34,18 @@ const rs = fs.createReadStream(__dirname + '/mockIcons.json')
     // .on('finish', function() {
     //     console.log('COMPLETED')
     // })
-const DIR1 = {
-    dir1: {
-        input: __dirname + '/dir1/input/',
-        output: __dirname + '/dir1/output/',
+
+const getDirData = (i) => ({
+    [`dir${i}`]: {
+        input: __dirname + `/dir${i}/input/`,
+        output: __dirname + `/dir${i}/output/`,
         root: __dirname,
     }
-}
+})
 
-const DIR2 = {
-    dir2: {
-        input: __dirname + '/dir2/input/',
-        output: __dirname + '/dir2/output/',
-        root: __dirname,
-    }
-}
-
-const DIR3 = {
-    dir3: {
-        input: __dirname + '/dir3/input/',
-        output: __dirname + '/dir3/output/',
-        root: __dirname,
-    }
-}
-
+const DIR1 = getDirData(1)
+const DIR2 = getDirData(2)
+const DIR3 = getDirData(3)
 
 describe('@pipeList', () => {
 
