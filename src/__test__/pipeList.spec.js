@@ -1,5 +1,8 @@
 const fs = require('fs')
+const { exec } = require('child_process')
 const through = require('through2')
+
+const { DIR1, DIR2, DIR3, SVG_PATH, getSvgFilePath } = require('./mockData')
 
 const {
     getConfig,
@@ -35,22 +38,24 @@ const rs = fs.createReadStream(__dirname + '/mockIcons.json')
     //     console.log('COMPLETED')
     // })
 
-const getDirData = (i) => ({
-    [`dir${i}`]: {
-        input: __dirname + `/dir${i}/input/`,
-        output: __dirname + `/dir${i}/output/`,
-        root: __dirname,
-    }
-})
 
-const DIR1 = getDirData(1)
-const DIR2 = getDirData(2)
-const DIR3 = getDirData(3)
 
 describe('@pipeList', () => {
 
-    describe('getConfig()', () => {
+    beforeAll(() => {
+        [
+            __dirname + '/dir1/output',
+            __dirname + '/dir2/output',
+            __dirname + '/dir3/output',
+        ].forEach(path => {
+            exec(`rm -rf ${path}` , (err, strdout, stderr) => {
+                if(err) console.log("Folder creation err:" + err)
+                console.log(`Removed ${path}`)
+            })
+        })
+    })
 
+    describe('getConfig()', () => {
         test('to split the config and pipe out three smaller configs', () => {
             let configs = []
             const expected = [DIR1, DIR2, DIR3]
@@ -71,39 +76,23 @@ describe('@pipeList', () => {
 
 
     describe('getSVGList()', () => {
-
         test('to pipe out 3 configs with svg names and file paths', () => {
             const configs = []
             const expected = [
                 {
                     ...DIR1.dir1,
                     brand: 'dir1',
-                    svg: {
-                        'arrow-down2': {filePath: __dirname + '/dir1/input/arrow-down2.svg'},
-                        'arrow-left2': {filePath: __dirname + '/dir1/input/arrow-left2.svg'},
-                        'arrow-right2': {filePath: __dirname + '/dir1/input/arrow-right2.svg'},
-                        'arrow-up2': {filePath: __dirname + '/dir1/input/arrow-up2.svg'}
-                    }
+                    svg: getSvgFilePath(1)
                 },
                 {
                     ...DIR2.dir2,
                     brand: 'dir2',
-                    svg: {
-                        'arrow-down2': {filePath: __dirname + '/dir2/input/arrow-down2.svg'},
-                        'arrow-left2': {filePath: __dirname + '/dir2/input/arrow-left2.svg'},
-                        'arrow-right2': {filePath: __dirname + '/dir2/input/arrow-right2.svg'},
-                        'arrow-up2': {filePath: __dirname + '/dir2/input/arrow-up2.svg'}
-                    }
+                    svg: getSvgFilePath(2)
                 },
                 {
                     ...DIR3.dir3,
                     brand: 'dir3',
-                    svg: {
-                        'arrow-down2': {filePath: __dirname + '/dir3/input/arrow-down2.svg'},
-                        'arrow-left2': {filePath: __dirname + '/dir3/input/arrow-left2.svg'},
-                        'arrow-right2': {filePath: __dirname + '/dir3/input/arrow-right2.svg'},
-                        'arrow-up2': {filePath: __dirname + '/dir3/input/arrow-up2.svg'}
-                    }
+                    svg: getSvgFilePath(3)
                 },
 
             ]
@@ -126,7 +115,69 @@ describe('@pipeList', () => {
 
     })
 
-    describe('getSVGPath()', () => {})
-    describe('createDirectories()', () => {})
+    describe('getSVGPath()', () => {
+        test('to pipe out 3 configs with svg names and paths', () => {
+            const configs = []
+            const expected = [
+                {
+                    ...DIR1.dir1,
+                    brand: 'dir1',
+                    svg: SVG_PATH
+                },
+                {
+                    ...DIR2.dir2,
+                    brand: 'dir2',
+                    svg: SVG_PATH
+                },
+                {
+                    ...DIR3.dir3,
+                    brand: 'dir3',
+                    svg: SVG_PATH
+                },
+
+            ]
+
+            rs
+                .pipe(through(getConfig))
+                .pipe(through(getSVGList))
+                .pipe(through(getSVGPath))
+                .pipe(through(
+                    function (chunk, encoding, done) {
+                        configs.push(JSON.parse(chunk.toString()))
+                        done()
+                    }
+                ))
+
+
+            rs.on('finish', () => {
+                expect(configs).toEqual(expected);
+                expect(configs.length).toEqual(3);
+            })
+        })
+
+
+    })
+
+    describe('createDirectories()', () => {
+        var piped = 0
+        rs
+            .pipe(through(getConfig))
+            .pipe(through(getSVGList))
+            .pipe(through(getSVGPath))
+            .pipe(through(createDirectories))
+            .pipe(through(
+                function (chunk, encoding, done) {
+                    piped += 1
+                    console.log('directories created')
+                    // configs.push(JSON.parse(chunk.toString()))
+                    done()
+                }
+            ))
+
+        rs.on('finish', () => {
+            // expect(configs).toEqual(expected);
+            expect(piped).toEqual(3);
+        })
+    })
     describe('saveToFile()', () => {})
 })

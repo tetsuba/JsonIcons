@@ -1,12 +1,8 @@
 #!/usr/bin/env node
 
-// const BasePath = process.cwd();
-
 const path = process.argv[2] // ./icons/icons.json
-
 const fs = require('fs')
 const through = require('through2')
-
 
 const {
     getConfig,
@@ -25,4 +21,3 @@ fs.createReadStream(path)
     .on('finish', function() {
         console.log('COMPLETED')
     })
-

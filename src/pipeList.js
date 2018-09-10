@@ -52,7 +52,7 @@ const getSVGPath = function(chunk, encoding, done) {
     const promises = []
 
     files.forEach(([key, value]) => {
-        const svgCode = fs.readFileSync('.' + value.filePath, 'utf8')
+        const svgCode = fs.readFileSync(value.filePath, 'utf8')
         promises.push(getSvgPath(svgCode))
     })
 
