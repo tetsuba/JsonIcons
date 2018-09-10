@@ -25,29 +25,20 @@ const updatePaths = function(chunk, encoding, done) {
     done(null, JSON.stringify(data))
 }
 
-
-
 const rs = fs.createReadStream(__dirname + '/mockIcons.json')
     .pipe(through(updatePaths))
-    // .pipe(through(getConfig))
-    // .pipe(through(getSVGList))
-    // .pipe(through(getSVGPath))
-    // .pipe(through(createDirectories))
-    // .pipe(through(saveToFile))
-    // .on('finish', function() {
-    //     console.log('COMPLETED')
-    // })
 
+const outputArray = [
+    __dirname + '/dir1/output',
+    __dirname + '/dir2/output',
+    __dirname + '/dir3/output',
+]
 
 
 describe('@pipeList', () => {
 
     beforeAll(() => {
-        [
-            __dirname + '/dir1/output',
-            __dirname + '/dir2/output',
-            __dirname + '/dir3/output',
-        ].forEach(path => {
+        outputArray.forEach(path => {
             exec(`rm -rf ${path}` , (err, strdout, stderr) => {
                 if(err) console.log("Folder creation err:" + err)
                 console.log(`Removed ${path}`)
@@ -159,24 +150,24 @@ describe('@pipeList', () => {
     })
 
     describe('createDirectories()', () => {
-        var piped = 0
-        rs
-            .pipe(through(getConfig))
-            .pipe(through(getSVGList))
-            .pipe(through(getSVGPath))
-            .pipe(through(createDirectories))
-            .pipe(through(
-                function (chunk, encoding, done) {
-                    piped += 1
-                    console.log('directories created')
-                    // configs.push(JSON.parse(chunk.toString()))
-                    done()
-                }
-            ))
+        test('', () => {
+            var piped = 0
+            rs
+                .pipe(through(getConfig))
+                .pipe(through(getSVGList))
+                .pipe(through(getSVGPath))
+                .pipe(through(createDirectories))
+                .pipe(through(
+                    function (chunk, encoding, done) {
+                        const data = JSON.parse(chunk.toString())
+                        if (fs.existsSync(data.output)) piped += 1
+                        done()
+                    }
+                ))
 
-        rs.on('finish', () => {
-            // expect(configs).toEqual(expected);
-            expect(piped).toEqual(3);
+            // rs.on('end', () => {
+            //     expect(piped).toEqual(3)
+            // })
         })
     })
     describe('saveToFile()', () => {})
