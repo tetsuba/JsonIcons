@@ -1,7 +1,6 @@
 const fs = require('fs')
 const { exec } = require('child_process')
 const through = require('through2')
-
 const { DIR1, DIR2, DIR3, SVG_PATH, getSvgFilePath } = require('./mockData')
 
 const {
@@ -25,8 +24,7 @@ const updatePaths = function(chunk, encoding, done) {
     done(null, JSON.stringify(data))
 }
 
-const rs = fs.createReadStream(__dirname + '/mockIcons.json')
-    .pipe(through(updatePaths))
+
 
 const outputArray = [
     __dirname + '/dir1/output',
@@ -41,7 +39,6 @@ describe('@pipeList', () => {
         outputArray.forEach(path => {
             exec(`rm -rf ${path}` , (err, strdout, stderr) => {
                 if(err) console.log("Folder creation err:" + err)
-                console.log(`Removed ${path}`)
             })
         })
     })
@@ -50,7 +47,10 @@ describe('@pipeList', () => {
         test('to split the config and pipe out three smaller configs', () => {
             let configs = []
             const expected = [DIR1, DIR2, DIR3]
-            rs.pipe(through(getConfig))
+
+            const rs = fs.createReadStream(__dirname + '/mockIcons.json')
+                .pipe(through(updatePaths))
+                .pipe(through(getConfig))
                 .pipe(through(
                     function (chunk, encoding, done) {
                         configs.push(JSON.parse(chunk.toString()))
@@ -62,6 +62,12 @@ describe('@pipeList', () => {
                 expect(configs).toEqual(expected);
                 expect(configs.length).toEqual(3);
             })
+        })
+
+        test('', () => {
+            const rs = fs.createReadStream(__dirname + '/mockIcons.jso')
+
+            rs.on('error', (err) => console.log('error ' + err) );
         })
     })
 
@@ -88,7 +94,8 @@ describe('@pipeList', () => {
 
             ]
 
-            rs
+            const rs = fs.createReadStream(__dirname + '/mockIcons.json')
+                .pipe(through(updatePaths))
                 .pipe(through(getConfig))
                 .pipe(through(getSVGList))
                 .pipe(through(
@@ -128,7 +135,8 @@ describe('@pipeList', () => {
 
             ]
 
-            rs
+            const rs = fs.createReadStream(__dirname + '/mockIcons.json')
+                .pipe(through(updatePaths))
                 .pipe(through(getConfig))
                 .pipe(through(getSVGList))
                 .pipe(through(getSVGPath))
@@ -145,14 +153,13 @@ describe('@pipeList', () => {
                 expect(configs.length).toEqual(3);
             })
         })
-
-
     })
 
     describe('createDirectories()', () => {
-        test('', () => {
+        test('should create an output directory in dir1, dir2 and dir3', () => {
             var piped = 0
-            rs
+            const rs = fs.createReadStream(__dirname + '/mockIcons.json')
+                .pipe(through(updatePaths))
                 .pipe(through(getConfig))
                 .pipe(through(getSVGList))
                 .pipe(through(getSVGPath))
@@ -165,10 +172,24 @@ describe('@pipeList', () => {
                     }
                 ))
 
-            // rs.on('end', () => {
-            //     expect(piped).toEqual(3)
-            // })
+            rs.on('finish', () => {
+                expect(piped).toEqual(3)
+            })
         })
     })
-    describe('saveToFile()', () => {})
+    describe('saveToFile()', () => {
+        const rs = fs.createReadStream(__dirname + '/mockIcons.json')
+            .pipe(through(updatePaths))
+            .pipe(through(getConfig))
+            .pipe(through(getSVGList))
+            .pipe(through(getSVGPath))
+            .pipe(through(createDirectories))
+            .pipe(through(saveToFile))
+
+        rs.on('finish', () => {
+            expect(fs.existsSync(DIR1.dir1.output + 'icons.json')).toBeTruthy()
+            expect(fs.existsSync(DIR2.dir2.output + 'icons.json')).toBeTruthy()
+            expect(fs.existsSync(DIR3.dir3.output + 'icons.json')).toBeTruthy()
+        })
+    })
 })

@@ -82,8 +82,6 @@ const createDirectories = function(chunk, encoding, done) {
 
     exec(`mkdir -p ${data.output}` , (err, strdout, stderr) => {
         if(err) console.log("Folder creation err:" + err)
-        console.log('Folder created', data.output)
-
         this.push(chunk)
         done()
     })
