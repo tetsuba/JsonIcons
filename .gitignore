@@ -3,3 +3,4 @@
 
 node_modules/
 example/**/
+src/__test__/**/output
